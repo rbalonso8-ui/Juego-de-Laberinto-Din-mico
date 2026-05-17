@@ -1,7 +1,6 @@
 import random
 from Constantes import CELDA_LIBRE, CELDA_OBSTACULO, PORCENTAJE_OBSTACULOS, MAX_LIBRES_CONSECUTIVAS
 
-
  
 class Matriz:
     """
@@ -78,4 +77,35 @@ class Matriz:
                     libres_seguidas += 1 
  
         return nueva_fila
+    def desplazar_hacia_abajo(self):
+        """
+        Aplica un scroll:
+          - Se elimina la ultima fila.
+          - Todas las demas filas bajan una posicion.
+          - Se agrega una fila NUEVA generada en la parte SUPERIOR (indice 0).
  
+        Returns:
+            list[int]: La fila que se elimino, por si se necesita auditarla.
+        """
+        fila_eliminada = self.celdas[-1]
+        fila_nueva = self.generar_fila()
+        self.celdas = [fila_nueva] + self.celdas[:-1]
+ 
+        return fila_eliminada
+ 
+    def obtener_celdas_libres(self):
+        """
+        Devuelve la lista de coordenadas (fila, columna) que actualmente
+        contienen CELDA_LIBRE. La usa el gestor de elementos para escoger
+        donde colocar monedas/poderes.
+ 
+        Returns:
+            list[tuple[int, int]]: Lista de tuplas (fila, columna).
+        """
+        libres = []
+        for f in range(self.tamano):
+            for c in range(self.tamano):
+                if self.celdas[f][c] == CELDA_LIBRE:
+                    libres.append((f, c))
+ 
+        return libres
