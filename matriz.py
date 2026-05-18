@@ -1,7 +1,6 @@
 import random
 from Constantes import CELDA_LIBRE, CELDA_OBSTACULO, PORCENTAJE_OBSTACULOS, MAX_LIBRES_CONSECUTIVAS
  
- 
 class Matriz:
     """Tablero cuadrado del juego. Se accede como celdas[fila][columna], fila 0 arriba."""
  
@@ -12,7 +11,7 @@ class Matriz:
             [CELDA_LIBRE for _ in range(tamaño)]
             for _ in range(tamaño)
         ]
- 
+
     def obtener_valor_celda(self, fila, columna):
         """Devuelve el valor de la celda; None si la posición está fuera de la matriz."""
         if 0 <= fila < self.tamaño and 0 <= columna < self.tamaño:

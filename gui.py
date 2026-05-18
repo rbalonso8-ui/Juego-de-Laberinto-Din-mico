@@ -128,7 +128,7 @@ class InterfazJuego:
 
         tk.Label(
             self.root,
-            text="Flechas: mover    |    1: bomba    |    2: paso fantasma    |    Esc: salir",
+            text="Flechas: mover    |    1: bomba    |    2: paso fantasma ",
             font=("Helvetica", 10),
             bg=COLOR_FONDO, fg="#aaaaaa", pady=4,
         ).pack(fill=tk.X, padx=10, pady=(4, 8))
@@ -202,39 +202,80 @@ class InterfazJuego:
                 f"Puntaje: {p:>5}   |   "
                 f"Bombas: {b:>2}   |   "
                 f"Paso Fantasma: {f:>2}   |   "
-                f"Velocidad: {v:.1f}s/fila"
             )
         )
 
     def _mostrar_game_over(self):
-        """Muestra una ventana modal con el puntaje final."""
+        """Muestra una ventana modal con el puntaje final y el Top 20 actualizado."""
         self._activo = False
-        print(f"[Game Over] Puntaje final: {self.juego.jugador.puntaje}")
-
+        puntaje_final = self.juego.jugador.puntaje
+        print(f"[Game Over] Puntaje final: {puntaje_final}")
+ 
+        entra_al_top = esta_en_top(self.tamano, puntaje_final)
+        guardar_puntaje(self.tamano, puntaje_final)
+        top = cargar_puntajes(self.tamano)
+ 
         ventana = tk.Toplevel(self.root)
         ventana.title("Game Over")
         ventana.configure(bg=COLOR_FONDO)
         ventana.resizable(False, False)
         ventana.transient(self.root)
-
+ 
         tk.Label(
             ventana, text="GAME OVER",
             font=("Helvetica", 26, "bold"),
             bg=COLOR_FONDO, fg="#ff5555",
         ).pack(pady=(20, 5), padx=40)
-
+ 
         tk.Label(
-            ventana, text="Quedaste fuera del mapa.",
-            font=("Helvetica", 11),
-            bg=COLOR_FONDO, fg="#cccccc",
-        ).pack(pady=(0, 10))
-
-        tk.Label(
-            ventana, text=f"Puntaje final: {self.juego.jugador.puntaje}",
+            ventana, text=f"Puntaje final: {puntaje_final}",
             font=("Helvetica", 16, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
-        ).pack(pady=(0, 20))
-
+        ).pack(pady=(0, 8))
+ 
+        if entra_al_top:
+            tk.Label(
+                ventana, text="¡Entraste al Top 20!",
+                font=("Helvetica", 12, "bold", "italic"),
+                bg=COLOR_FONDO, fg="#ffd700",
+            ).pack(pady=(0, 8))
+        else:
+            tk.Label(
+                ventana, text="Seguí intentando para entrar al Top 20",
+                font=("Helvetica", 10, "italic"),
+                bg=COLOR_FONDO, fg="#aaaaaa",
+            ).pack(pady=(0, 8))
+ 
+        tk.Label(
+            ventana, text=f"TOP {20} (matriz {self.tamano}x{self.tamano})",
+            font=("Helvetica", 12, "bold"),
+            bg=COLOR_FONDO, fg=COLOR_TEXTO,
+        ).pack(pady=(8, 4))
+ 
+        marco_top = tk.Frame(ventana, bg=COLOR_FONDO)
+        marco_top.pack(padx=30, pady=4)
+ 
+        propio_marcado = False
+        for indice, valor in enumerate(top, start=1):
+            es_propio = (not propio_marcado) and entra_al_top and (valor == puntaje_final)
+            if es_propio:
+                propio_marcado = True
+            flecha = "→" if es_propio else "  "
+            texto = f"{flecha} {indice:>2}.   {valor}"
+            color_fg = "#ffd700" if es_propio else COLOR_TEXTO
+            tk.Label(
+                marco_top, text=texto,
+                font=("Consolas", 11, "bold" if es_propio else "normal"),
+                bg=COLOR_FONDO, fg=color_fg, anchor="w",
+            ).pack(fill=tk.X)
+ 
+        if len(top) == 0:
+            tk.Label(
+                marco_top, text="(sin puntajes registrados)",
+                font=("Helvetica", 10, "italic"),
+                bg=COLOR_FONDO, fg="#888888",
+            ).pack()
+ 
         def cerrar_todo():
             self.juego.detener()
             try:
@@ -245,15 +286,15 @@ class InterfazJuego:
                 self.root.destroy()
             except tk.TclError:
                 pass
-
+ 
         tk.Button(
             ventana, text="Cerrar",
             font=("Helvetica", 12, "bold"),
             width=12,
             cursor="hand2",
             command=cerrar_todo,
-        ).pack(pady=(0, 20))
-
+        ).pack(pady=15)
+ 
         ventana.protocol("WM_DELETE_WINDOW", cerrar_todo)
         ventana.update_idletasks()
         try:
@@ -262,7 +303,6 @@ class InterfazJuego:
             pass
         ventana.lift()
         ventana.focus_force()
-
     def _cerrar(self):
         """Cierra la ventana del juego deteniendo antes el hilo de scroll."""
         self.juego.detener()
