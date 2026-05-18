@@ -6,7 +6,7 @@ from Constantes import (
     CELDA_BOMBA, CELDA_FANTASMA,
     COLOR_FONDO, COLOR_LIBRE, COLOR_OBSTACULO, COLOR_JUGADOR,
     COLOR_MONEDA_5, COLOR_MONEDA_10, COLOR_BOMBA, COLOR_FANTASMA,
-    COLOR_TEXTO, COLOR_BORDE,
+    COLOR_TEXTO, COLOR_BORDE, COLOR_TOP_DESTACADO,
     TAMAÑOS, TAMAÑO_CELDA_PX,
 )
 
@@ -29,7 +29,7 @@ class MenuInicial:
         """Construye la ventana de selección pero aún no la muestra."""
         self.tamaño_seleccionado = None
         self.root = tk.Tk()
-        self.root.title("Laberinto Dinamico - Menu Inicial")
+        self.root.title("Laberinto Dinamico")
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
         self._construir_widgets()
@@ -43,7 +43,7 @@ class MenuInicial:
         ).pack(padx=20, pady=(15, 5))
 
         tk.Label(
-            self.root, text="Selecciona el tamaño de la matriz:",
+            self.root, text="Selecciona la dificultad:",
             font=("Helvetica", 12), bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(5, 15))
 
@@ -60,7 +60,7 @@ class MenuInicial:
             ).pack(side=tk.LEFT, padx=8, pady=10)
 
     def _seleccionar_tamaño(self, tamaño):
-        """Callback de los botones del menú; guarda la selección y cierra la ventana."""
+        """Botones del menú, guarda la selección y cierra la ventana."""
         self.tamaño_seleccionado = tamaño
         self.root.destroy()
 
@@ -206,14 +206,92 @@ class InterfazJuego:
             )
         )
 
+    def _pedir_nombre(self):
+        """Muestra un diálogo modal pidiendo un nombre de máximo 10 caracteres.
+ 
+        Returns:
+            str: nombre ingresado (limitado a 10 caracteres) o "Anonimo" si está vacío.
+        """
+        nombre_var = tk.StringVar()
+        resultado = [None]
+ 
+        dialogo = tk.Toplevel(self.root)
+        dialogo.title("¡Top 20!")
+        dialogo.configure(bg=COLOR_FONDO)
+        dialogo.resizable(False, False)
+        dialogo.transient(self.root)
+ 
+        tk.Label(
+            dialogo, text="¡Entraste al Top 20!",
+            font=("Helvetica", 16, "bold"),
+            bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
+        ).pack(pady=(20, 5), padx=40)
+ 
+        tk.Label(
+            dialogo, text="Ingresá tu nombre (máx 10 caracteres):",
+            font=("Helvetica", 11),
+            bg=COLOR_FONDO, fg=COLOR_TEXTO,
+        ).pack(pady=(0, 10))
+ 
+        def validar(P):
+            return len(P) <= 10
+ 
+        vcmd = (dialogo.register(validar), "%P")
+        entrada = tk.Entry(
+            dialogo, textvariable=nombre_var,
+            font=("Consolas", 14),
+            width=12, justify="center",
+            validate="key", validatecommand=vcmd,
+        )
+        entrada.pack(pady=(0, 15), padx=20)
+        entrada.focus_set()
+ 
+        def confirmar(event=None):
+            nombre = nombre_var.get().strip()
+            if not nombre:
+                nombre = "Anonimo"
+            resultado[0] = nombre[:10]
+            try:
+                dialogo.destroy()
+            except tk.TclError:
+                pass
+ 
+        tk.Button(
+            dialogo, text="Guardar",
+            font=("Helvetica", 12, "bold"),
+            width=12, cursor="hand2",
+            command=confirmar,
+        ).pack(pady=(0, 18))
+ 
+        dialogo.bind("<Return>", confirmar)
+        dialogo.protocol("WM_DELETE_WINDOW", confirmar)
+        dialogo.update_idletasks()
+        try:
+            dialogo.grab_set()
+        except tk.TclError:
+            pass
+        dialogo.lift()
+        dialogo.focus_force()
+ 
+        self.root.wait_window(dialogo)
+        return resultado[0] or "Anonimo"
+ 
     def _mostrar_game_over(self):
-        """Muestra una ventana modal con el puntaje final y el Top 20 actualizado."""
+        """Muestra una ventana modal con el puntaje final y el Top 20 actualizado.
+ 
+        Si el puntaje entra al Top 20, primero pide un nombre al jugador y lo guarda.
+        """
         self._activo = False
         puntaje_final = self.juego.jugador.puntaje
         print(f"[Game Over] Puntaje final: {puntaje_final}")
  
         entra_al_top = esta_en_top(self.tamaño, puntaje_final)
-        guardar_puntaje(self.tamaño, puntaje_final)
+ 
+        nombre_propio = None
+        if entra_al_top:
+            nombre_propio = self._pedir_nombre()
+            guardar_puntaje(self.tamaño, nombre_propio, puntaje_final)
+ 
         top = cargar_puntajes(self.tamaño)
  
         ventana = tk.Toplevel(self.root)
@@ -236,15 +314,15 @@ class InterfazJuego:
  
         if entra_al_top:
             tk.Label(
-                ventana, text="¡Entraste al Top 20!",
+                ventana, text=f"¡Entraste al Top 20 como {nombre_propio}!",
                 font=("Helvetica", 12, "bold", "italic"),
-                bg=COLOR_FONDO, fg="#ffd700",
+                bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
             ).pack(pady=(0, 8))
         else:
             tk.Label(
                 ventana, text="Seguí intentando para entrar al Top 20",
                 font=("Helvetica", 10, "italic"),
-                bg=COLOR_FONDO, fg="#aaaaaa",
+                bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
             ).pack(pady=(0, 8))
  
         tk.Label(
@@ -257,13 +335,18 @@ class InterfazJuego:
         marco_top.pack(padx=30, pady=4)
  
         propio_marcado = False
-        for indice, valor in enumerate(top, start=1):
-            es_propio = (not propio_marcado) and entra_al_top and (valor == puntaje_final)
+        for indice, (nombre_top, valor) in enumerate(top, start=1):
+            es_propio = (
+                (not propio_marcado)
+                and entra_al_top
+                and valor == puntaje_final
+                and nombre_top == nombre_propio
+            )
             if es_propio:
                 propio_marcado = True
             flecha = "→" if es_propio else "  "
-            texto = f"{flecha} {indice:>2}.   {valor}"
-            color_fg = "#ffd700" if es_propio else COLOR_TEXTO
+            texto = f"{flecha} {indice:>2}.   {nombre_top:<10}   {valor}"
+            color_fg = COLOR_TOP_DESTACADO if es_propio else COLOR_TEXTO
             tk.Label(
                 marco_top, text=texto,
                 font=("Consolas", 11, "bold" if es_propio else "normal"),
@@ -274,7 +357,7 @@ class InterfazJuego:
             tk.Label(
                 marco_top, text="(sin puntajes registrados)",
                 font=("Helvetica", 10, "italic"),
-                bg=COLOR_FONDO, fg="#888888",
+                bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
             ).pack()
  
         def cerrar_todo():
@@ -305,7 +388,7 @@ class InterfazJuego:
         ventana.lift()
         ventana.focus_force()
     def _cerrar(self):
-        """Cierra la ventana del juego deteniendo antes el hilo de scroll."""
+        """Cierra la ventana del juego deteniendo antes el scroll"""
         self.juego.detener()
         self._activo = False
         try:
