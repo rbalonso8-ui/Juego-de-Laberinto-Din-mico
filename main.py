@@ -15,7 +15,7 @@ def main():
     interfaz = InterfazJuego(tamaño, juego)
     interfaz.iniciar()
  
-    print("Juego finalizado. Hasta la próxima.")
+    print("Juego finalizado.")
  
  
 if __name__ == "__main__":

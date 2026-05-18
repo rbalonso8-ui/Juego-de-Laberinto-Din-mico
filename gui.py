@@ -54,10 +54,7 @@ class MenuInicial:
                 marco, text=f"{tamano} x {tamano}",
                 font=("Helvetica", 14, "bold"),
                 width=8, height=2,
-                bg=COLOR_BORDE, fg=COLOR_TEXTO,
-                activebackground=COLOR_FONDO,
-                activeforeground=COLOR_TEXTO,
-                relief="raised", cursor="hand2",
+                cursor="hand2",
                 command=lambda t=tamano: self._seleccionar_tamano(t),
             ).pack(side=tk.LEFT, padx=8, pady=10)
  
@@ -77,10 +74,10 @@ class MenuInicial:
  
  
 class InterfazJuego:
-    """Ventana principal donde transcurre la partida (rejilla de botones)."""
+    """Ventana principal donde transcurre la partida (rejilla de celdas)."""
  
     def __init__(self, tamaño, juego):
-        """Construye la ventana del juego con la rejilla de botones del tablero."""
+        """Construye la ventana del juego con la rejilla de celdas del tablero."""
         self.tamano = tamaño
         self.juego = juego
         self._activo = True
@@ -91,7 +88,7 @@ class InterfazJuego:
         self.root.resizable(False, False)
  
         self._img_celda = tk.PhotoImage(width=1, height=1)
-        self.botones = []
+        self.celdas = []
         self._colores_actuales = [
             [None] * self.tamano for _ in range(self.tamano)
         ]
@@ -101,7 +98,7 @@ class InterfazJuego:
         self.root.protocol("WM_DELETE_WINDOW", self._cerrar)
  
     def _construir_widgets(self):
-        """Crea la etiqueta de info, la rejilla de botones y las instrucciones."""
+        """Crea la etiqueta de info, la rejilla de celdas y las instrucciones."""
         self.etiqueta_info = tk.Label(
             self.root, text="",
             font=("Consolas", 12, "bold"),
@@ -113,23 +110,21 @@ class InterfazJuego:
         marco_tablero.pack(padx=10, pady=4)
  
         for fila in range(self.tamano):
-            fila_btns = []
+            fila_celdas = []
             for columna in range(self.tamano):
-                b = tk.Button(
+                c = tk.Label(
                     marco_tablero,
                     image=self._img_celda,
                     width=TAMANO_CELDA_PX,
                     height=TAMANO_CELDA_PX,
                     bg=COLOR_LIBRE,
-                    activebackground=COLOR_LIBRE,
                     bd=1,
                     relief="raised",
                     highlightthickness=0,
-                    takefocus=0,
                 )
-                b.grid(row=fila, column=columna, padx=0, pady=0)
-                fila_btns.append(b)
-            self.botones.append(fila_btns)
+                c.grid(row=fila, column=columna, padx=0, pady=0)
+                fila_celdas.append(c)
+            self.celdas.append(fila_celdas)
  
         tk.Label(
             self.root,
@@ -176,12 +171,10 @@ class InterfazJuego:
         self.root.after(50, self._actualizar)
  
     def _pintar_celda(self, fila, columna, color):
-        """Cambia el color de un botón solo si difiere del actual."""
+        """Cambia el color de una celda solo si difiere del actual."""
         if self._colores_actuales[fila][columna] != color:
             self._colores_actuales[fila][columna] = color
-            self.botones[fila][columna].config(
-                bg=color, activebackground=color
-            )
+            self.celdas[fila][columna].config(bg=color)
  
     def _dibujar(self):
         """Redibuja todo el tablero a partir del estado actual del juego."""
@@ -246,8 +239,6 @@ class InterfazJuego:
             ventana, text="Cerrar",
             font=("Helvetica", 12, "bold"),
             width=12,
-            bg=COLOR_BORDE, fg=COLOR_TEXTO,
-            activebackground=COLOR_FONDO, activeforeground=COLOR_TEXTO,
             cursor="hand2",
             command=cerrar_todo,
         ).pack(pady=15)

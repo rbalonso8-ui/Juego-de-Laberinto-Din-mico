@@ -23,23 +23,28 @@ class Matriz:
         """Asigna un nuevo valor a la celda si la posición es válida."""
         if 0 <= fila < self.tamano and 0 <= columna < self.tamano:
             self.celdas[fila][columna] = valor
+    def _cumple_restriccion(self, fila):
+        """True si la fila no tiene más de MAX_LIBRES_CONSECUTIVAS libres seguidas."""
+        consec = 0
+        for celda in fila:
+            if celda == CELDA_LIBRE:
+                consec += 1
+                if consec > MAX_LIBRES_CONSECUTIVAS:
+                    return False
+            else:
+                consec = 0
+        return True
 
     def generar_fila(self):
-        """Genera una fila aleatoria con ~60% de obstáculos y máx 2 libres seguidas."""
-        nueva_fila = []
-        libres_seguidas = 0
-        for _ in range(self.tamano):
-            if libres_seguidas >= MAX_LIBRES_CONSECUTIVAS:
-                nueva_fila.append(CELDA_OBSTACULO)
-                libres_seguidas = 0
-            else:
-                if random.random() < PORCENTAJE_OBSTACULOS:
-                    nueva_fila.append(CELDA_OBSTACULO)
-                    libres_seguidas = 0
-                else:
-                    nueva_fila.append(CELDA_LIBRE)
-                    libres_seguidas += 1
-        return nueva_fila
+        """Genera una fila aleatoria con 60% de obstáculos y máx 2 libres seguidas."""
+        n = self.tamano
+        n_obstaculos = round(n * PORCENTAJE_OBSTACULOS)
+        fila = [CELDA_OBSTACULO] * n_obstaculos + [CELDA_LIBRE] * (n - n_obstaculos)
+        for _ in range(500):
+            random.shuffle(fila)
+            if self._cumple_restriccion(fila):
+                return list(fila)
+        return list(fila)
 
     def desplazar_hacia_abajo(self):
         """Aplica un scroll: elimina la fila inferior, baja todas las demás y agrega una nueva arriba."""
