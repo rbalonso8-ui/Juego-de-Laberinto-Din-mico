@@ -10,6 +10,7 @@ from Constantes import (
     TAMAÑOS, TAMAÑO_CELDA_PX,
 )
 
+from puntaje import cargar_puntajes, guardar_puntaje, esta_en_top
 
 _COLORES = {
     CELDA_LIBRE:     COLOR_LIBRE,
@@ -211,9 +212,9 @@ class InterfazJuego:
         puntaje_final = self.juego.jugador.puntaje
         print(f"[Game Over] Puntaje final: {puntaje_final}")
  
-        entra_al_top = esta_en_top(self.tamano, puntaje_final)
-        guardar_puntaje(self.tamano, puntaje_final)
-        top = cargar_puntajes(self.tamano)
+        entra_al_top = esta_en_top(self.tamaño, puntaje_final)
+        guardar_puntaje(self.tamaño, puntaje_final)
+        top = cargar_puntajes(self.tamaño)
  
         ventana = tk.Toplevel(self.root)
         ventana.title("Game Over")
@@ -247,7 +248,7 @@ class InterfazJuego:
             ).pack(pady=(0, 8))
  
         tk.Label(
-            ventana, text=f"TOP {20} (matriz {self.tamano}x{self.tamano})",
+            ventana, text=f"TOP {20} (matriz {self.tamaño}x{self.tamaño})",
             font=("Helvetica", 12, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(8, 4))
