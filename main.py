@@ -4,13 +4,13 @@ def main():
     """Funcion principal del programa. Coordina menu inicial e inicio del juego.
     """
     menu = MenuInicial()
-    tamano = menu.mostrar()
+    tamaño = menu.mostrar()
  
-    if tamano is None:
-        print("No se selecciono un tamano. Saliendo del juego.")
+    if tamaño is None:
+        print("No se selecciono un tamaño. Saliendo del juego.")
         return
  
-    interfaz = InterfazJuego(tamano)
+    interfaz = InterfazJuego(tamaño)
     interfaz.iniciar()
     print("Juego finalizado. Hasta la proxima.")
  
