@@ -13,20 +13,24 @@ from Constantes import (
 )
 from matriz import Matriz
 from Jugador import jugador
- 
- 
+
+
 _TIPOS_ELEMENTOS = [CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA]
 _PESOS_ELEMENTOS = [40, 25, 20, 15]
- 
- 
+
+TIEMPO_GRACIA_INICIAL = 4.0
+
+
 class Juego:
     """Motor del juego: scroll automático, movimiento, habilidades y elementos."""
- 
-    def __init__(self, tamano):
+
+    def __init__(self, tamaño):
         """Construye matriz, jugador y deja la partida lista para iniciar."""
-        self.tamano = tamano
-        self.matriz = Matriz(tamano)
-        self.jugador = jugador(tamano - 1, tamano // 2)
+        self.tamaño = tamaño
+        self.matriz = Matriz(tamaño)
+        self.jugador = jugador(tamaño - 1, tamaño // 2)
+        self.jugador.bombas = 1
+        self.jugador.pasos_fantasma = 1
         self.intervalo_scroll = TIEMPO_INICIAL
         self.jugando = True
         self.lock = threading.Lock()
@@ -35,12 +39,12 @@ class Juego:
         self.ultima_aparicion = 0.0
         self.elementos = []
         self._prellenar()
- 
+
     def _prellenar(self):
         """Llena las filas superiores y coloca un elemento de cada tipo para verlos al iniciar."""
-        for fila in range(self.tamano - 2):
+        for fila in range(self.tamaño - 2):
             self.matriz.celdas[fila] = self.matriz.generar_fila()
- 
+
         libres = self.matriz.obtener_celdas_libres()
         libres = [c for c in libres
                   if c != (self.jugador.fila, self.jugador.columna)]
@@ -49,7 +53,7 @@ class Juego:
         for tipo, (f, c) in zip(_TIPOS_ELEMENTOS, libres):
             self.matriz.valor_celda(f, c, tipo)
             self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
- 
+
     def iniciar(self):
         """Lanza el hilo de desplazamiento (scroll automático)."""
         self.tiempo_inicio = time.time()
@@ -58,30 +62,34 @@ class Juego:
             target=self._bucle_scroll, daemon=True
         )
         self.hilo_scroll.start()
- 
+
     def detener(self):
         """Marca el juego como terminado para que el hilo salga del bucle."""
         self.jugando = False
- 
+
     def _bucle_scroll(self):
-        """Bucle del hilo secundario: aplica el scroll cada cierto intervalo."""
+        """Bucle del hilo secundario: aplica el scroll cada cierto intervalo.
+
+        El primer scroll tarda TIEMPO_GRACIA_INICIAL segundos para dar tiempo
+        a que el jugador se oriente. Los siguientes usan intervalo_scroll.
+        """
+        time.sleep(TIEMPO_GRACIA_INICIAL)
         while self.jugando:
-            time.sleep(self.intervalo_scroll)
-            if not self.jugando:
-                break
             with self.lock:
                 self.matriz.desplazar_hacia_abajo()
                 self.jugador.fila += 1
                 vivos = []
                 for el in self.elementos:
                     el['fila'] += 1
-                    if el['fila'] < self.tamano:
+                    if el['fila'] < self.tamaño:
                         vivos.append(el)
                 self.elementos = vivos
-                if self.jugador.fila >= self.tamano:
+                if self.jugador.fila >= self.tamaño:
                     self.jugando = False
+                    print("[Game Over] El jugador quedó fuera del mapa.")
                     break
- 
+            time.sleep(self.intervalo_scroll)
+
     def procesar_tecla(self, tecla):
         """Reenvía una pulsación de tecla al jugador (movimiento o habilidad especial)."""
         mapa_direcciones = {
@@ -97,7 +105,7 @@ class Juego:
                 self.jugador.usar_bomba(self.matriz)
             elif tecla == "2":
                 self.jugador.usar_paso_fantasma(self.matriz)
- 
+
     def actualizar_tiempos(self):
         """Genera nuevos elementos periódicamente y expira los que vencieron."""
         if not self.jugando:
@@ -108,7 +116,7 @@ class Juego:
             if ahora - self.ultima_aparicion >= TIEMPO_APARICION_ELEMENTOS:
                 self._generar_elemento(ahora)
                 self.ultima_aparicion = ahora
- 
+
     def _generar_elemento(self, ahora):
         """Coloca un elemento aleatorio (moneda/bomba/fantasma) en una celda libre."""
         libres = self.matriz.obtener_celdas_libres()
@@ -120,7 +128,7 @@ class Juego:
         tipo = random.choices(_TIPOS_ELEMENTOS, weights=_PESOS_ELEMENTOS)[0]
         self.matriz.valor_celda(f, c, tipo)
         self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
- 
+
     def _expirar_elementos(self, ahora):
         """Elimina elementos vencidos (más de DURACION_ELEMENTOS) o ya recolectados."""
         sobrevivientes = []

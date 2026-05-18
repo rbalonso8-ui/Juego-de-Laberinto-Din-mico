@@ -27,7 +27,7 @@ class jugador:
         nueva_f = self.fila + df
         nueva_c = self.columna + dc
  
-        if not (0 <= nueva_f < matriz.tamano and 0 <= nueva_c < matriz.tamano):
+        if not (0 <= nueva_f < matriz.tamaño and 0 <= nueva_c < matriz.tamaño):
             return
  
         valor = matriz.obtener_valor_celda(nueva_f, nueva_c)
@@ -59,7 +59,7 @@ class jugador:
         df, dc = self.direccion
         f_obj = self.fila + df
         c_obj = self.columna + dc
-        if not (0 <= f_obj < matriz.tamano and 0 <= c_obj < matriz.tamano):
+        if not (0 <= f_obj < matriz.tamaño and 0 <= c_obj < matriz.tamaño):
             return
         if matriz.obtener_valor_celda(f_obj, c_obj) != CELDA_OBSTACULO:
             return
@@ -83,7 +83,7 @@ class jugador:
  
         if matriz.obtener_valor_celda(f_obs, c_obs) != CELDA_OBSTACULO:
             return
-        if not (0 <= f_dest < matriz.tamano and 0 <= c_dest < matriz.tamano):
+        if not (0 <= f_dest < matriz.tamaño and 0 <= c_dest < matriz.tamaño):
             return
         valor_dest = matriz.obtener_valor_celda(f_dest, c_dest)
         if valor_dest == CELDA_OBSTACULO:
