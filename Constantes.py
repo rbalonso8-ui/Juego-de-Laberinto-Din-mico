@@ -42,3 +42,20 @@ DIRECCION_ARRIBA = (-1, 0)
 DIRECCION_ABAJO = (1, 0)
 DIRECCION_IZQUIERDA = (0, -1)
 DIRECCION_DERECHA = (0, 1)
+
+# ============================================================
+# Colores para la GUI
+# ============================================================
+COLOR_FONDO = "#1e1e1e"
+COLOR_LIBRE = "#2d2d2d"
+COLOR_OBSTACULO = "#8b4513"
+COLOR_JUGADOR = "#00ff00"
+COLOR_MONEDA_5 = "#ffd700"
+COLOR_MONEDA_10 = "#ff8c00"
+COLOR_BOMBA = "#ff3030"
+COLOR_FANTASMA = "#9370db"
+COLOR_TEXTO = "#ffffff"
+COLOR_BORDE = "#0f0f0f"
+COLOR_TOP_DESTACADO = "#ffd700"
+
+TAMANO_CELDA_PX = 28

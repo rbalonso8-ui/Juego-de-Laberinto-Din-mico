@@ -78,8 +78,7 @@ class Matriz:
  
         return nueva_fila
     def desplazar_hacia_abajo(self):
-        """
-        Aplica un scroll:
+        """Aplica un scroll:
           - Se elimina la ultima fila.
           - Todas las demas filas bajan una posicion.
           - Se agrega una fila NUEVA generada en la parte SUPERIOR (indice 0).
@@ -94,8 +93,7 @@ class Matriz:
         return fila_eliminada
  
     def obtener_celdas_libres(self):
-        """
-        Devuelve la lista de coordenadas (fila, columna) que actualmente
+        """Devuelve la lista de coordenadas (fila, columna) que actualmente
         contienen CELDA_LIBRE. La usa el gestor de elementos para escoger
         donde colocar monedas/poderes.
  
