@@ -1,9 +1,17 @@
-from Constantes import CELDA_LIBRE, CELDA_OBSTACULO, CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA,PUNTOS_MONEDA_5, PUNTOS_MONEDA_10, DIRECCION_ARRIBA
-
+from Constantes import (
+    CELDA_LIBRE, CELDA_OBSTACULO,
+    CELDA_MONEDA_5, CELDA_MONEDA_10,
+    CELDA_BOMBA, CELDA_FANTASMA,
+    PUNTOS_MONEDA_5, PUNTOS_MONEDA_10,
+    DIRECCION_ARRIBA,
+)
+ 
+ 
 class jugador:
     """Datos y movimiento del jugador."""
  
     def __init__(self, fila, columna):
+        """Crea el jugador en la posición indicada, mirando hacia arriba."""
         self.fila = fila
         self.columna = columna
         self.direccion = DIRECCION_ARRIBA
@@ -12,7 +20,7 @@ class jugador:
         self.pasos_fantasma = 0
  
     def mover(self, direccion, matriz):
-        """Intenta mover al jugador en la dirección dada y recolecta elementos."""
+        """Intenta mover al jugador y recolecta el elemento de la celda destino."""
         df, dc = direccion
         self.direccion = direccion
  
@@ -39,4 +47,3 @@ class jugador:
         matriz.valor_celda(nueva_f, nueva_c, CELDA_LIBRE)
         self.fila = nueva_f
         self.columna = nueva_c
- 

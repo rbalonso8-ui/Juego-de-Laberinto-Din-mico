@@ -1,18 +1,23 @@
 from gui import MenuInicial, InterfazJuego
-
+from juego import Juego
+ 
+ 
 def main():
-    """Funcion principal del programa. Coordina menu inicial e inicio del juego.
-    """
+    """Coordina el menú inicial y el inicio de la partida."""
     menu = MenuInicial()
     tamaño = menu.mostrar()
  
     if tamaño is None:
-        print("No se selecciono un tamaño. Saliendo del juego.")
+        print("No se seleccionó un tamaño. Saliendo del juego.")
         return
  
-    interfaz = InterfazJuego(tamaño)
+    juego = Juego(tamaño)
+    interfaz = InterfazJuego(tamaño, juego)
     interfaz.iniciar()
-    print("Juego finalizado. Hasta la proxima.")
+ 
+    print("Juego finalizado. Hasta la próxima.")
+ 
  
 if __name__ == "__main__":
     main()
+ 

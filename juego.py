@@ -1,16 +1,26 @@
 import threading
 import time
 import random
-from Constantes import TIEMPO_INICIAL, DIRECCION_ARRIBA, DIRECCION_ABAJO, DIRECCION_IZQUIERDA, DIRECCION_DERECHA, CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA
-from Jugador import jugador
+from Constantes import (
+    TIEMPO_INICIAL,
+    DIRECCION_ARRIBA, DIRECCION_ABAJO,
+    DIRECCION_IZQUIERDA, DIRECCION_DERECHA,
+    CELDA_MONEDA_5, CELDA_MONEDA_10,
+    CELDA_BOMBA, CELDA_FANTASMA,
+)
 from matriz import Matriz
+from Jugador import jugador
 
 
 class Juego:
-    """Representa el estado del juego y la logica de actualizacion.
+    """Motor del juego en versión mínima: scroll + movimiento del jugador.
+
+    Pendiente para la siguiente iteración: generación periódica de elementos,
+    expiración, aumento de dificultad y poderes (bomba, paso fantasma).
     """
 
     def __init__(self, tamano):
+        """Construye matriz, jugador y deja la partida lista para iniciar."""
         self.tamano = tamano
         self.matriz = Matriz(tamano)
         self.jugador = jugador(tamano - 1, tamano // 2)
@@ -18,10 +28,10 @@ class Juego:
         self.jugando = True
         self.lock = threading.Lock()
         self.hilo_scroll = None
-
         self._prellenar_para_pruebas()
 
     def _prellenar_para_pruebas(self):
+        """Llena las filas superiores y coloca un elemento de cada tipo para verlos al iniciar."""
         for fila in range(self.tamano - 2):
             self.matriz.celdas[fila] = self.matriz.generar_fila()
 
@@ -36,16 +46,18 @@ class Juego:
             self.matriz.valor_celda(f, c, tipo)
 
     def iniciar(self):
-        """Arranca el hilo de desplazamiento."""
+        """Lanza el hilo de desplazamiento (scroll automático)."""
         self.hilo_scroll = threading.Thread(
             target=self._bucle_scroll, daemon=True
         )
         self.hilo_scroll.start()
 
     def detener(self):
+        """Marca el juego como terminado para que el hilo salga del bucle."""
         self.jugando = False
 
     def _bucle_scroll(self):
+        """Bucle del hilo secundario: aplica el scroll cada cierto intervalo."""
         while self.jugando:
             time.sleep(self.intervalo_scroll)
             if not self.jugando:
@@ -58,6 +70,7 @@ class Juego:
                     break
 
     def procesar_tecla(self, tecla):
+        """Reenvía una pulsación de tecla al jugador (bomba/paso fantasma pendientes)."""
         mapa = {
             "Up": DIRECCION_ARRIBA,
             "Down": DIRECCION_ABAJO,
@@ -69,8 +82,5 @@ class Juego:
                 self.jugador.mover(mapa[tecla], self.matriz)
 
     def actualizar_tiempos(self):
-        """Hook para subir dificultad y generar elementos.
-
-        Pendiente de implementar en la siguiente iteración.
-        """
+        """Hook para subir dificultad y generar elementos. Pendiente de implementar."""
         pass
