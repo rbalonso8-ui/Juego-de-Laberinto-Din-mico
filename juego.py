@@ -2,7 +2,7 @@ import threading
 import time
 import random
 from Constantes import TIEMPO_INICIAL, DIRECCION_ARRIBA, DIRECCION_ABAJO, DIRECCION_IZQUIERDA, DIRECCION_DERECHA, CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA
-from jugador import jugador
+from Jugador import jugador
 from matriz import Matriz
 
 

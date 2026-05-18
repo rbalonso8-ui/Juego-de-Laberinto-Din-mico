@@ -3,8 +3,7 @@ from Constantes import CELDA_LIBRE, CELDA_OBSTACULO, PORCENTAJE_OBSTACULOS, MAX_
 
  
 class Matriz:
-    """
-    Representa el tablero cuadrado del juego.
+    """Representa el tablero cuadrado del juego.
  
     Atributos:
         tamano (int): Cantidad de filas (y de columnas) de la matriz. Es cuadrada.
@@ -13,8 +12,7 @@ class Matriz:
     """
  
     def __init__(self, tamano):
-        """
-        Constructor: crea una matriz inicialmente vacia (todas las celdas libres).
+        """Constructor: crea una matriz inicialmente vacia (todas las celdas libres).
  
         Args:
             tamano (int): Tamano del lado de la matriz (10, 20 o 30).
@@ -27,8 +25,7 @@ class Matriz:
         ]
  
     def obtener_valor_celda(self, fila, columna):
-        """
-        Devuelve el valor (tipo) de la celda en la posicion indicada.
+        """Devuelve el valor (tipo) de la celda en la posicion indicada.
  
         Args:
             fila (int): Indice de fila (0 = arriba).
@@ -42,8 +39,7 @@ class Matriz:
         return None
  
     def valor_celda(self, fila, columna, valor):
-        """
-        Asigna un nuevo valor a la celda indicada.
+        """Asigna un nuevo valor a la celda indicada.
  
         Args:
             fila (int): Indice de fila.
@@ -54,8 +50,7 @@ class Matriz:
             self.celdas[fila][columna] = valor
  
     def generar_fila(self):
-        """
-        Genera una fila aleatoria que cumple las restricciones del enunciado:
+        """Genera una fila aleatoria que cumple las restricciones del enunciado:
         Aproximadamente 60% de obstaculos.
         Nunca mas de 2 celdas libres consecutivas.
  

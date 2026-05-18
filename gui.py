@@ -1,5 +1,4 @@
 import tkinter as tk
-
 from Constantes import CELDA_LIBRE, CELDA_OBSTACULO, CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA, COLOR_FONDO, COLOR_LIBRE, COLOR_OBSTACULO, COLOR_JUGADOR, COLOR_MONEDA_5, COLOR_MONEDA_10, COLOR_BOMBA, COLOR_FANTASMA, COLOR_TEXTO, COLOR_BORDE,TAMAÑOS, TAMANO_CELDA_PX
 
 class MenuInicial:
@@ -49,7 +48,6 @@ class MenuInicial:
         return self.tamano_seleccionado
 
 
-# Mapeo de tipo de celda -> color
 _COLORES = {
     CELDA_LIBRE:     COLOR_LIBRE,
     CELDA_OBSTACULO: COLOR_OBSTACULO,
@@ -73,11 +71,8 @@ class InterfazJuego:
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
 
-        # Imagen vacía para fijar tamaño en píxeles de los botones de la rejilla
         self._img_celda = tk.PhotoImage(width=1, height=1)
 
-        # Matriz de widgets (botones) y de colores actuales para evitar
-        # reconfigurar lo que no cambió.
         self.botones = []
         self._colores_actuales = [
             [None] * self.tamano for _ in range(self.tamano)
@@ -95,12 +90,9 @@ class InterfazJuego:
         )
         self.etiqueta_info.pack(fill=tk.X, padx=10, pady=(8, 4))
 
-        # Marco contenedor del tablero (le da un borde uniforme)
         marco_tablero = tk.Frame(self.root, bg=COLOR_BORDE, bd=2, relief="sunken")
         marco_tablero.pack(padx=10, pady=4)
 
-        # Crear los botones de la rejilla una sola vez. En cada refresco
-        # solo cambiamos el bg en lugar de destruir/recrear.
         for fila in range(self.tamano):
             fila_btns = []
             for columna in range(self.tamano):
