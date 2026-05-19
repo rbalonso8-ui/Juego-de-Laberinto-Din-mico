@@ -181,6 +181,7 @@ class InterfazJuego:
             self.celdas[fila][columna].config(bg=color)
 
     def _dibujar(self):
+
         with self.juego.lock:
 
             f_jug = self.juego.jugador.fila
@@ -190,11 +191,11 @@ class InterfazJuego:
                 for columna in range(self.tamaño):
 
                     celda = self.celdas[fila][columna]
-
+                    
                     if fila == f_jug and columna == c_jug:
 
                         celda.config(
-                            image=self.sprite_jugador
+                            image=self.diseño["jugador_hacia_delante1"]
                         )
 
                     else:
@@ -204,9 +205,47 @@ class InterfazJuego:
                             columna
                         )
 
-                        celda.config(
-                            image=self.diseño[valor]
-                        )
+                        if valor == CELDA_LIBRE:
+
+                            celda.config(
+                                image=self.diseño["suelo"]
+                            )
+
+                        elif valor == CELDA_OBSTACULO:
+
+                            celda.config(
+                                image=self.diseño["muro"]
+                            )
+
+                        elif valor == CELDA_MONEDA_5:
+
+                            celda.config(
+                                image=self.diseño["moneda5"]
+                            )
+
+                        elif valor == CELDA_MONEDA_10:
+
+                            celda.config(
+                                image=self.diseño["moneda10"]
+                            )
+
+                        elif valor == CELDA_BOMBA:
+
+                            celda.config(
+                                image=self.diseño["bomba"]
+                            )
+
+                        elif valor == CELDA_FANTASMA:
+
+                            celda.config(
+                                image=self.diseño["fantasma"]
+                            )
+
+                        else:
+
+                            celda.config(
+                                image=self.diseño["suelo"]
+                            )
     def _actualizar_info(self):
         """Refresca el texto del HUD con puntaje, poderes y velocidad."""
         with self.juego.lock:
