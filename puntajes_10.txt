@@ -1,4 +1,7 @@
 Allo	40
 Alonso	30
+D	25
+C	20
 X	15
+Xd	15
 Anonimo	10

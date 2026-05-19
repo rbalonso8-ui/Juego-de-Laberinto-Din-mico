@@ -37,11 +37,11 @@ class MenuInicial:
     def tamaño_titulo(self, tamaño):
         """Devuelve el título del juego."""
         if tamaño == 10:
-            return "Facil"
+            return ["Facil", "#00ff00"]
         elif tamaño == 20:
-            return "Medio"
+            return ["Medio", "#ffff00"]
         elif tamaño == 30:
-            return "Dificil"
+            return ["Dificil", "#ff0000"]
         else:
             return f"{tamaño}x{tamaño}"
 
@@ -63,11 +63,13 @@ class MenuInicial:
 
         for tamaño in TAMAÑOS:
             tk.Button(
-                marco, text=f"{self.tamaño_titulo(tamaño)}",
+                marco, text=f"{self.tamaño_titulo(tamaño)[0]}",
                 font=("Helvetica", 14, "bold"),
                 width=8, height=2,
                 cursor="hand2",
                 command=lambda t=tamaño: self._seleccionar_tamaño(t),
+                bg="#2F2F2F",
+                fg=self.tamaño_titulo(tamaño)[1],
             ).pack(side=tk.LEFT, padx=8, pady=10)
 
     def _seleccionar_tamaño(self, tamaño):
@@ -95,7 +97,7 @@ class InterfazJuego:
         self._activo = True
 
         self.root = tk.Tk()
-        self.root.title(f"Laberinto Dinamico - {self.tamaño_titulo(self.tamaño)}")
+        self.root.title(f"Laberinto Dinamico - {self.tamaño_titulo(self.tamaño)[0]}")
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
 
@@ -112,11 +114,11 @@ class InterfazJuego:
     def tamaño_titulo(self, tamaño):
         """Devuelve el título del juego."""
         if tamaño == 10:
-            return "Facil"
+            return ["Facil", "#00ff00"]
         elif tamaño == 20:
-            return "Medio"
+            return ["Medio", "#ffff00"]
         elif tamaño == 30:
-            return "Dificil"
+            return ["Dificil", "#ff0000"]
         else:
             return f"{tamaño}x{tamaño}"
 
