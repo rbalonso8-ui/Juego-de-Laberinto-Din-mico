@@ -1,5 +1,6 @@
 import os
 
+
 def _ruta(tamaño):
     """Devuelve el nombre del archivo de puntajes para un tamaño de matriz."""
     return f"puntajes_{tamaño}.txt"
@@ -13,13 +14,13 @@ def _limpiar_nombre(nombre):
     if not limpio:
         return "Anonimo"
     return limpio[:10]
- 
- 
+
+
 def cargar_puntajes(tamaño):
     """Lee los puntajes guardados para el tamaño dado, ordenados de mayor a menor.
- 
+
     Returns:
-        list[int]: lista con hasta 20 puntajes; vacía si no hay archivo.
+        list[tuple[str, int]]: lista con hasta 20 (nombre, puntaje); vacía si no hay archivo.
     """
     ruta = _ruta(tamaño)
     if not os.path.exists(ruta):
@@ -46,33 +47,33 @@ def cargar_puntajes(tamaño):
             entradas.append((nombre, puntaje))
     entradas.sort(key=lambda x: x[1], reverse=True)
     return entradas[:20]
- 
- 
+
+
 def guardar_puntaje(tamaño, nombre, puntaje):
-    """Agrega un puntaje con nombre, reordena y conserva sólo el Top MAX_PUNTAJES_TOP."""
+    """Agrega un puntaje con nombre, deduplica por nombre y conserva el Top 20."""
     nombre_limpio = _limpiar_nombre(nombre)
     entradas = cargar_puntajes(tamaño)
- 
+
     mejores = {}
     for n, p in entradas:
         if n not in mejores or p > mejores[n]:
             mejores[n] = p
- 
+
     if nombre_limpio not in mejores or puntaje > mejores[nombre_limpio]:
         mejores[nombre_limpio] = puntaje
- 
+
     entradas = sorted(mejores.items(), key=lambda x: x[1], reverse=True)
     entradas = entradas[:20]
- 
+
     ruta = _ruta(tamaño)
     with open(ruta, "w", encoding="utf-8") as f:
         for n, p in entradas:
             f.write(f"{n}\t{p}\n")
- 
- 
+
+
 def esta_en_top(tamaño, puntaje):
     """True si el puntaje entraría al Top (hay menos de 20 o supera al menor del Top)."""
     puntajes = cargar_puntajes(tamaño)
     if len(puntajes) < 20:
         return True
-    return puntaje > puntajes[-1]
+    return puntaje > puntajes[-1][1]

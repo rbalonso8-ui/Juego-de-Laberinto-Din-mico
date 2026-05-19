@@ -3,6 +3,9 @@ import time
 import random
 from Constantes import (
     TIEMPO_INICIAL,
+    TIEMPO_AUMENTO_DIFICULTAD,
+    DECREMENTO_TIEMPO,
+    TIEMPO_MINIMO,
     TIEMPO_APARICION_ELEMENTOS,
     DURACION_ELEMENTOS,
     DIRECCION_ARRIBA, DIRECCION_ABAJO,
@@ -71,7 +74,9 @@ class Juego:
         """Bucle del hilo secundario: aplica el scroll cada cierto intervalo.
 
         El primer scroll tarda TIEMPO_GRACIA_INICIAL segundos para dar tiempo
-        a que el jugador se oriente. Los siguientes usan intervalo_scroll.
+        a que el jugador se oriente. Los siguientes usan intervalo_scroll,
+        que se reduce gradualmente conforme avanza la partida (ver
+        actualizar_tiempos).
         """
         time.sleep(TIEMPO_GRACIA_INICIAL)
         while self.jugando:
@@ -107,7 +112,12 @@ class Juego:
                 self.jugador.usar_paso_fantasma(self.matriz)
 
     def actualizar_tiempos(self):
-        """Genera nuevos elementos periódicamente y expira los que vencieron."""
+        """Genera elementos, expira los vencidos y aumenta la dificultad del scroll.
+
+        Cada TIEMPO_AUMENTO_DIFICULTAD (15) segundos transcurridos desde el
+        inicio, el intervalo entre scrolls se reduce en DECREMENTO_TIEMPO
+        (0.1) segundos, hasta un mínimo de TIEMPO_MINIMO (0.2) segundos.
+        """
         if not self.jugando:
             return
         ahora = time.time()
@@ -116,6 +126,14 @@ class Juego:
             if ahora - self.ultima_aparicion >= TIEMPO_APARICION_ELEMENTOS:
                 self._generar_elemento(ahora)
                 self.ultima_aparicion = ahora
+
+            if self.tiempo_inicio is not None:
+                transcurrido = ahora - self.tiempo_inicio
+                decrementos = int(transcurrido // TIEMPO_AUMENTO_DIFICULTAD)
+                nuevo_intervalo = TIEMPO_INICIAL - decrementos * DECREMENTO_TIEMPO
+                if nuevo_intervalo < TIEMPO_MINIMO:
+                    nuevo_intervalo = TIEMPO_MINIMO
+                self.intervalo_scroll = nuevo_intervalo
 
     def _generar_elemento(self, ahora):
         """Coloca un elemento aleatorio (moneda/bomba/fantasma) en una celda libre."""

@@ -203,39 +203,40 @@ class InterfazJuego:
                 f"Puntaje: {p:>5}   |   "
                 f"Bombas: {b:>2}   |   "
                 f"Paso Fantasma: {f:>2}   |   "
+                f"Velocidad: {v:.1f}s/fila"
             )
         )
 
     def _pedir_nombre(self):
         """Muestra un diálogo modal pidiendo un nombre de máximo 10 caracteres.
- 
+
         Returns:
             str: nombre ingresado (limitado a 10 caracteres) o "Anonimo" si está vacío.
         """
         nombre_var = tk.StringVar()
         resultado = [None]
- 
+
         dialogo = tk.Toplevel(self.root)
         dialogo.title("¡Top 20!")
         dialogo.configure(bg=COLOR_FONDO)
         dialogo.resizable(False, False)
         dialogo.transient(self.root)
- 
+
         tk.Label(
             dialogo, text="¡Entraste al Top 20!",
             font=("Helvetica", 16, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
         ).pack(pady=(20, 5), padx=40)
- 
+
         tk.Label(
             dialogo, text="Ingresá tu nombre (máx 10 caracteres):",
             font=("Helvetica", 11),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(0, 10))
- 
+
         def validar(P):
             return len(P) <= 10
- 
+
         vcmd = (dialogo.register(validar), "%P")
         entrada = tk.Entry(
             dialogo, textvariable=nombre_var,
@@ -245,7 +246,7 @@ class InterfazJuego:
         )
         entrada.pack(pady=(0, 15), padx=20)
         entrada.focus_set()
- 
+
         def confirmar(event=None):
             nombre = nombre_var.get().strip()
             if not nombre:
@@ -255,14 +256,14 @@ class InterfazJuego:
                 dialogo.destroy()
             except tk.TclError:
                 pass
- 
+
         tk.Button(
             dialogo, text="Guardar",
             font=("Helvetica", 12, "bold"),
             width=12, cursor="hand2",
             command=confirmar,
         ).pack(pady=(0, 18))
- 
+
         dialogo.bind("<Return>", confirmar)
         dialogo.protocol("WM_DELETE_WINDOW", confirmar)
         dialogo.update_idletasks()
@@ -272,46 +273,46 @@ class InterfazJuego:
             pass
         dialogo.lift()
         dialogo.focus_force()
- 
+
         self.root.wait_window(dialogo)
         return resultado[0] or "Anonimo"
- 
+
     def _mostrar_game_over(self):
         """Muestra una ventana modal con el puntaje final y el Top 20 actualizado.
- 
+
         Si el puntaje entra al Top 20, primero pide un nombre al jugador y lo guarda.
         """
         self._activo = False
         puntaje_final = self.juego.jugador.puntaje
         print(f"[Game Over] Puntaje final: {puntaje_final}")
- 
+
         entra_al_top = esta_en_top(self.tamaño, puntaje_final)
- 
+
         nombre_propio = None
         if entra_al_top:
             nombre_propio = self._pedir_nombre()
             guardar_puntaje(self.tamaño, nombre_propio, puntaje_final)
- 
+
         top = cargar_puntajes(self.tamaño)
- 
+
         ventana = tk.Toplevel(self.root)
         ventana.title("Game Over")
         ventana.configure(bg=COLOR_FONDO)
         ventana.resizable(False, False)
         ventana.transient(self.root)
- 
+
         tk.Label(
             ventana, text="GAME OVER",
             font=("Helvetica", 26, "bold"),
             bg=COLOR_FONDO, fg="#ff5555",
         ).pack(pady=(20, 5), padx=40)
- 
+
         tk.Label(
             ventana, text=f"Puntaje final: {puntaje_final}",
             font=("Helvetica", 16, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(0, 8))
- 
+
         if entra_al_top:
             tk.Label(
                 ventana, text=f"¡Entraste al Top 20 como {nombre_propio}!",
@@ -322,18 +323,18 @@ class InterfazJuego:
             tk.Label(
                 ventana, text="Seguí intentando para entrar al Top 20",
                 font=("Helvetica", 10, "italic"),
-                bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
+                bg=COLOR_FONDO, fg="#aaaaaa",
             ).pack(pady=(0, 8))
- 
+
         tk.Label(
             ventana, text=f"TOP {20} (matriz {self.tamaño}x{self.tamaño})",
             font=("Helvetica", 12, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(8, 4))
- 
+
         marco_top = tk.Frame(ventana, bg=COLOR_FONDO)
         marco_top.pack(padx=30, pady=4)
- 
+
         propio_marcado = False
         for indice, (nombre_top, valor) in enumerate(top, start=1):
             es_propio = (
@@ -352,14 +353,14 @@ class InterfazJuego:
                 font=("Consolas", 11, "bold" if es_propio else "normal"),
                 bg=COLOR_FONDO, fg=color_fg, anchor="w",
             ).pack(fill=tk.X)
- 
+
         if len(top) == 0:
             tk.Label(
                 marco_top, text="(sin puntajes registrados)",
                 font=("Helvetica", 10, "italic"),
-                bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
+                bg=COLOR_FONDO, fg="#888888",
             ).pack()
- 
+
         def cerrar_todo():
             self.juego.detener()
             try:
@@ -370,7 +371,7 @@ class InterfazJuego:
                 self.root.destroy()
             except tk.TclError:
                 pass
- 
+
         tk.Button(
             ventana, text="Cerrar",
             font=("Helvetica", 12, "bold"),
@@ -378,7 +379,7 @@ class InterfazJuego:
             cursor="hand2",
             command=cerrar_todo,
         ).pack(pady=15)
- 
+
         ventana.protocol("WM_DELETE_WINDOW", cerrar_todo)
         ventana.update_idletasks()
         try:
@@ -387,8 +388,9 @@ class InterfazJuego:
             pass
         ventana.lift()
         ventana.focus_force()
+
     def _cerrar(self):
-        """Cierra la ventana del juego deteniendo antes el scroll"""
+        """Cierra la ventana del juego deteniendo antes el scroll."""
         self.juego.detener()
         self._activo = False
         try:
