@@ -1,6 +1,8 @@
 xd	10
 Hola	5
 A	5
+R	5
 Anonimo	0
 alllo	0
 B	0
+g	0

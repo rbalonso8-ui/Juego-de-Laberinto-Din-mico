@@ -64,26 +64,33 @@ class jugador:
         self.bombas -= 1
 
     def usar_paso_fantasma(self, matriz):
-        """Atraviesa el obstáculo en la dirección actual hasta la primera celda libre.
-        """
+        """Atraviesa exactamente un obstáculo en la dirección actual y se posiciona en la primera celda libre inmediatamente posterior."""
         if self.pasos_fantasma <= 0:
             return
+            
         df, dc = self.direccion
+        f1 = self.fila + df
+        c1 = self.columna + dc
+        
+        if not (0 <= f1 < matriz.tamaño and 0 <= c1 < matriz.tamaño):
+            return
+            
+        if matriz.obtener_valor_celda(f1, c1) != CELDA_OBSTACULO:
+            return
+        f2 = self.fila + df * 2
+        c2 = self.columna + dc * 2
+        
+        if not (0 <= f2 < matriz.tamaño and 0 <= c2 < matriz.tamaño):
+            return
+            
+        valor_destino = matriz.obtener_valor_celda(f2, c2)
+        
+        if valor_destino == CELDA_OBSTACULO:
+            return
 
-        paso = 1
-        while True:
-            f = self.fila + df * paso
-            c = self.columna + dc * paso
-            if not (0 <= f < matriz.tamaño and 0 <= c < matriz.tamaño):
-                return
-            valor = matriz.obtener_valor_celda(f, c)
-            if valor != CELDA_OBSTACULO:
-                if paso == 1:
-                    return
-                self._recolectar(valor)
-                matriz.valor_celda(f, c, CELDA_LIBRE)
-                self.fila = f
-                self.columna = c
-                self.pasos_fantasma -= 1
-                return
-            paso += 1
+        self._recolectar(valor_destino)
+        matriz.valor_celda(f2, c2, CELDA_LIBRE)
+        
+        self.fila = f2
+        self.columna = c2
+        self.pasos_fantasma -= 1
