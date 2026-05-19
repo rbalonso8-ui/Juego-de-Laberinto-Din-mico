@@ -1,4 +1,5 @@
 import tkinter as tk
+from turtle import color
 
 from Constantes import (
     CELDA_LIBRE, CELDA_OBSTACULO,
@@ -37,11 +38,11 @@ class MenuInicial:
     def tamaño_titulo(self, tamaño):
         """Devuelve el título del juego."""
         if tamaño == 10:
-            return ["Facil", "#00ff00"]
+            return ["Facil", "#008400"]
         elif tamaño == 20:
-            return ["Medio", "#ffff00"]
+            return ["Medio", "#bebe28"]
         elif tamaño == 30:
-            return ["Dificil", "#ff0000"]
+            return ["Dificil", "#a52121"]
         else:
             return f"{tamaño}x{tamaño}"
 
@@ -68,8 +69,11 @@ class MenuInicial:
                 width=8, height=2,
                 cursor="hand2",
                 command=lambda t=tamaño: self._seleccionar_tamaño(t),
-                bg="#2F2F2F",
+                bg = "#4A4A4A",
                 fg=self.tamaño_titulo(tamaño)[1],
+                activebackground="#5A5A5A",
+                activeforeground=self.tamaño_titulo(tamaño)[1],
+                relief="flat"
             ).pack(side=tk.LEFT, padx=8, pady=10)
 
     def _seleccionar_tamaño(self, tamaño):
