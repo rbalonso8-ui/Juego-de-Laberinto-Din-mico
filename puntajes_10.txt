@@ -1,1 +1,3 @@
 Allo	40
+Alonso	30
+Anonimo	10

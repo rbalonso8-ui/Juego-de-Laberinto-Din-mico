@@ -10,8 +10,6 @@ from Constantes import (
     TAMAÑOS, TAMAÑO_CELDA_PX,
 )
 
-from Diseño import  cargar_pixelart
-
 from puntaje import cargar_puntajes, guardar_puntaje, esta_en_top
 
 _COLORES = {
@@ -90,8 +88,7 @@ class InterfazJuego:
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
 
-        self.diseño = cargar_pixelart()
-        
+        self._img_celda = tk.PhotoImage(width=1, height=1)
         self.celdas = []
         self._colores_actuales = [
             [None] * self.tamaño for _ in range(self.tamaño)
@@ -118,7 +115,7 @@ class InterfazJuego:
             for columna in range(self.tamaño):
                 c = tk.Label(
                     marco_tablero,
-                    image=self.diseño[CELDA_LIBRE],
+                    image=self._img_celda,
                     width=TAMAÑO_CELDA_PX,
                     height=TAMAÑO_CELDA_PX,
                     bg=COLOR_LIBRE,
@@ -181,71 +178,19 @@ class InterfazJuego:
             self.celdas[fila][columna].config(bg=color)
 
     def _dibujar(self):
-
+        """Redibuja todo el tablero a partir del estado actual del juego."""
         with self.juego.lock:
-
             f_jug = self.juego.jugador.fila
             c_jug = self.juego.jugador.columna
-
             for fila in range(self.tamaño):
                 for columna in range(self.tamaño):
-
-                    celda = self.celdas[fila][columna]
-                    
                     if fila == f_jug and columna == c_jug:
-
-                        celda.config(
-                            image=self.diseño["jugador_hacia_delante1"]
-                        )
-
+                        color = COLOR_JUGADOR
                     else:
+                        valor = self.juego.matriz.obtener_valor_celda(fila, columna)
+                        color = _COLORES.get(valor, COLOR_LIBRE)
+                    self._pintar_celda(fila, columna, color)
 
-                        valor = self.juego.matriz.obtener_valor_celda(
-                            fila,
-                            columna
-                        )
-
-                        if valor == CELDA_LIBRE:
-
-                            celda.config(
-                                image=self.diseño["suelo"]
-                            )
-
-                        elif valor == CELDA_OBSTACULO:
-
-                            celda.config(
-                                image=self.diseño["muro"]
-                            )
-
-                        elif valor == CELDA_MONEDA_5:
-
-                            celda.config(
-                                image=self.diseño["moneda5"]
-                            )
-
-                        elif valor == CELDA_MONEDA_10:
-
-                            celda.config(
-                                image=self.diseño["moneda10"]
-                            )
-
-                        elif valor == CELDA_BOMBA:
-
-                            celda.config(
-                                image=self.diseño["bomba"]
-                            )
-
-                        elif valor == CELDA_FANTASMA:
-
-                            celda.config(
-                                image=self.diseño["fantasma"]
-                            )
-
-                        else:
-
-                            celda.config(
-                                image=self.diseño["suelo"]
-                            )
     def _actualizar_info(self):
         """Refresca el texto del HUD con puntaje, poderes y velocidad."""
         with self.juego.lock:
