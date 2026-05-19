@@ -10,6 +10,8 @@ from Constantes import (
     TAMAÑOS, TAMAÑO_CELDA_PX,
 )
 
+from Diseño import  cargar_pixelart
+
 from puntaje import cargar_puntajes, guardar_puntaje, esta_en_top
 
 _COLORES = {
@@ -88,7 +90,8 @@ class InterfazJuego:
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
 
-        self._img_celda = tk.PhotoImage(width=1, height=1)
+        self.diseño = cargar_pixelart()
+        
         self.celdas = []
         self._colores_actuales = [
             [None] * self.tamaño for _ in range(self.tamaño)
@@ -115,7 +118,7 @@ class InterfazJuego:
             for columna in range(self.tamaño):
                 c = tk.Label(
                     marco_tablero,
-                    image=self._img_celda,
+                    image=self.diseño[CELDA_LIBRE],
                     width=TAMAÑO_CELDA_PX,
                     height=TAMAÑO_CELDA_PX,
                     bg=COLOR_LIBRE,
@@ -178,19 +181,32 @@ class InterfazJuego:
             self.celdas[fila][columna].config(bg=color)
 
     def _dibujar(self):
-        """Redibuja todo el tablero a partir del estado actual del juego."""
         with self.juego.lock:
+
             f_jug = self.juego.jugador.fila
             c_jug = self.juego.jugador.columna
+
             for fila in range(self.tamaño):
                 for columna in range(self.tamaño):
-                    if fila == f_jug and columna == c_jug:
-                        color = COLOR_JUGADOR
-                    else:
-                        valor = self.juego.matriz.obtener_valor_celda(fila, columna)
-                        color = _COLORES.get(valor, COLOR_LIBRE)
-                    self._pintar_celda(fila, columna, color)
 
+                    celda = self.celdas[fila][columna]
+
+                    if fila == f_jug and columna == c_jug:
+
+                        celda.config(
+                            image=self.sprite_jugador
+                        )
+
+                    else:
+
+                        valor = self.juego.matriz.obtener_valor_celda(
+                            fila,
+                            columna
+                        )
+
+                        celda.config(
+                            image=self.diseño[valor]
+                        )
     def _actualizar_info(self):
         """Refresca el texto del HUD con puntaje, poderes y velocidad."""
         with self.juego.lock:
