@@ -25,7 +25,7 @@ TIEMPO_GRACIA_INICIAL = 4.0
 
 
 class Juego:
-    """Motor del juego: scroll automático, movimiento, habilidades y elementos."""
+    """Clase principal que maneja la lógica del juego, el estado de la matriz, el jugador y el hilo de desplazamiento."""
 
     def __init__(self, tamaño):
         """Construye matriz, jugador y deja la partida lista para iniciar."""
@@ -58,7 +58,7 @@ class Juego:
             self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
 
     def iniciar(self):
-        """Lanza el hilo de desplazamiento (scroll automático)."""
+        """Hace un scroll automático cada intervalo_scroll segundos, y permite procesar teclas para mover al jugador o usar habilidades."""
         self.tiempo_inicio = time.time()
         self.ultima_aparicion = self.tiempo_inicio
         self.hilo_scroll = threading.Thread(
@@ -67,17 +67,11 @@ class Juego:
         self.hilo_scroll.start()
 
     def detener(self):
-        """Marca el juego como terminado para que el hilo salga del bucle."""
+        """Marca el juego como terminado para que el scroll salga del bucle."""
         self.jugando = False
 
     def _bucle_scroll(self):
-        """Bucle del hilo secundario: aplica el scroll cada cierto intervalo.
-
-        El primer scroll tarda TIEMPO_GRACIA_INICIAL segundos para dar tiempo
-        a que el jugador se oriente. Los siguientes usan intervalo_scroll,
-        que se reduce gradualmente conforme avanza la partida (ver
-        actualizar_tiempos).
-        """
+        """Bucle del scroll secundario: aplica el scroll cada cierto intervalo."""
         time.sleep(TIEMPO_GRACIA_INICIAL)
         while self.jugando:
             with self.lock:
@@ -96,7 +90,7 @@ class Juego:
             time.sleep(self.intervalo_scroll)
 
     def procesar_tecla(self, tecla):
-        """Reenvía una pulsación de tecla al jugador (movimiento o habilidad especial)."""
+        """Envia una indicacion segun la presionada por el usuario."""
         mapa_direcciones = {
             "Up": DIRECCION_ARRIBA,
             "Down": DIRECCION_ABAJO,
@@ -112,12 +106,7 @@ class Juego:
                 self.jugador.usar_paso_fantasma(self.matriz)
 
     def actualizar_tiempos(self):
-        """Genera elementos, expira los vencidos y aumenta la dificultad del scroll.
-
-        Cada TIEMPO_AUMENTO_DIFICULTAD (15) segundos transcurridos desde el
-        inicio, el intervalo entre scrolls se reduce en DECREMENTO_TIEMPO
-        (0.1) segundos, hasta un mínimo de TIEMPO_MINIMO (0.2) segundos.
-        """
+        """Genera elementos, expira los vencidos y aumenta la dificultad del scroll."""
         if not self.jugando:
             return
         ahora = time.time()
@@ -136,7 +125,7 @@ class Juego:
                 self.intervalo_scroll = nuevo_intervalo
 
     def _generar_elemento(self, ahora):
-        """Coloca un elemento aleatorio (moneda/bomba/fantasma) en una celda libre."""
+        """Coloca un elemento aleatorio en una celda libre."""
         libres = self.matriz.obtener_celdas_libres()
         libres = [c for c in libres
                   if c != (self.jugador.fila, self.jugador.columna)]
@@ -148,7 +137,7 @@ class Juego:
         self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
 
     def _expirar_elementos(self, ahora):
-        """Elimina elementos vencidos (más de DURACION_ELEMENTOS) o ya recolectados."""
+        """Elimina elementos vencidos o ya recolectados."""
         sobrevivientes = []
         for el in self.elementos:
             valor_actual = self.matriz.obtener_valor_celda(el['fila'], el['columna'])

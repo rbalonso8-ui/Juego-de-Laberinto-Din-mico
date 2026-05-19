@@ -33,6 +33,17 @@ class MenuInicial:
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
         self._construir_widgets()
+        
+    def tamaño_titulo(self, tamaño):
+        """Devuelve el título del juego."""
+        if tamaño == 10:
+            return "Facil"
+        elif tamaño == 20:
+            return "Medio"
+        elif tamaño == 30:
+            return "Dificil"
+        else:
+            return f"{tamaño}x{tamaño}"
 
     def _construir_widgets(self):
         """Crea y posiciona los widgets de la ventana del menú."""
@@ -52,7 +63,7 @@ class MenuInicial:
 
         for tamaño in TAMAÑOS:
             tk.Button(
-                marco, text=f"{tamaño} x {tamaño}",
+                marco, text=f"{self.tamaño_titulo(tamaño)}",
                 font=("Helvetica", 14, "bold"),
                 width=8, height=2,
                 cursor="hand2",
@@ -75,7 +86,7 @@ class MenuInicial:
 
 
 class InterfazJuego:
-    """Ventana principal donde transcurre la partida (rejilla de celdas)."""
+    """Ventana principal donde transcurre la partida."""
 
     def __init__(self, tamaño, juego):
         """Construye la ventana del juego con la rejilla de celdas del tablero."""
@@ -84,7 +95,7 @@ class InterfazJuego:
         self._activo = True
 
         self.root = tk.Tk()
-        self.root.title(f"Laberinto Dinamico - {tamaño}x{tamaño}")
+        self.root.title(f"Laberinto Dinamico - {self.tamaño_titulo(self.tamaño)}")
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
 
@@ -97,6 +108,17 @@ class InterfazJuego:
         self._construir_widgets()
         self._asociar_teclas()
         self.root.protocol("WM_DELETE_WINDOW", self._cerrar)
+        
+    def tamaño_titulo(self, tamaño):
+        """Devuelve el título del juego."""
+        if tamaño == 10:
+            return "Facil"
+        elif tamaño == 20:
+            return "Medio"
+        elif tamaño == 30:
+            return "Dificil"
+        else:
+            return f"{tamaño}x{tamaño}"
 
     def _construir_widgets(self):
         """Crea la etiqueta de info, la rejilla de celdas y las instrucciones."""
@@ -145,7 +167,7 @@ class InterfazJuego:
         self.root.bind("<Escape>", lambda e: self._cerrar())
 
     def _tecla(self, nombre):
-        """Reenvía una pulsación de tecla al motor del juego."""
+        """Reenvía una señal de tecla al motor del juego."""
         if not self.juego.jugando:
             return
         self.juego.procesar_tecla(nombre)
@@ -157,7 +179,7 @@ class InterfazJuego:
         self.root.mainloop()
 
     def _actualizar(self):
-        """Callback periódico: actualiza tiempos, redibuja y reagenda."""
+        """actualiza tiempos, redibuja y reagenda."""
         if not self._activo:
             return
 
@@ -278,10 +300,7 @@ class InterfazJuego:
         return resultado[0] or "Anonimo"
 
     def _mostrar_game_over(self):
-        """Muestra una ventana modal con el puntaje final y el Top 20 actualizado.
-
-        Si el puntaje entra al Top 20, primero pide un nombre al jugador y lo guarda.
-        """
+        """Muestra una ventana modal con el puntaje final y el Top 20 actualizado."""
         self._activo = False
         puntaje_final = self.juego.jugador.puntaje
         print(f"[Game Over] Puntaje final: {puntaje_final}")

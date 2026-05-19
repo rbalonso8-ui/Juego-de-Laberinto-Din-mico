@@ -1,3 +1,4 @@
 Allo	40
 Alonso	30
+X	15
 Anonimo	10

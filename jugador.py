@@ -9,7 +9,6 @@ from Constantes import (
 
 class jugador:
     """Datos, movimiento y habilidades especiales del jugador."""
-
     def __init__(self, fila, columna):
         """Crea el jugador en la posición indicada, mirando hacia arriba."""
         self.fila = fila
@@ -51,11 +50,7 @@ class jugador:
         self.columna = nueva_c
 
     def usar_bomba(self, matriz):
-        """Destruye el obstáculo inmediatamente adyacente en la dirección actual.
-
-        Solo se consume una bomba si efectivamente hay un obstáculo en esa celda
-        y dentro del mapa. Si no, la habilidad no se gasta.
-        """
+        """Destruye el obstáculo inmediatamente adyacente en la dirección actual."""
         if self.bombas <= 0:
             return
         df, dc = self.direccion
@@ -69,10 +64,7 @@ class jugador:
         self.bombas -= 1
 
     def usar_paso_fantasma(self, matriz):
-        """Atraviesa los obstáculos consecutivos en la dirección actual hasta la primera celda libre.
-
-        Si no hay obstáculo en la celda inmediata, no se activa (no tendría sentido).
-        Si saldría del mapa antes de encontrar una celda libre, tampoco se activa.
+        """Atraviesa el obstáculo en la dirección actual hasta la primera celda libre.
         """
         if self.pasos_fantasma <= 0:
             return

@@ -3,12 +3,12 @@ from juego import Juego
  
  
 def main():
-    """Coordina el menú inicial y el inicio de la partida."""
+    """Coordina el flujo del juuego, menú inicial y el inicio de la partida."""
     menu = MenuInicial()
     tamaño = menu.mostrar()
  
     if tamaño is None:
-        print("No se seleccionó un tamaño. Saliendo del juego.")
+        print("Saliendo del juego.")
         return
  
     juego = Juego(tamaño)

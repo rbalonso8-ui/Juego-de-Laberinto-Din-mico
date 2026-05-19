@@ -1,13 +1,12 @@
 import os
 
-
 def _ruta(tamaño):
     """Devuelve el nombre del archivo de puntajes para un tamaño de matriz."""
     return f"puntajes_{tamaño}.txt"
 
 
 def _limpiar_nombre(nombre):
-    """Sanitiza un nombre: quita tabs/saltos y trunca a 10 caracteres."""
+    """Normaliza un nombre: quita tabs/saltos y trunca a 10 caracteres."""
     if not nombre:
         return "Anonimo"
     limpio = nombre.replace("\t", " ").replace("\n", " ").strip()
@@ -72,7 +71,7 @@ def guardar_puntaje(tamaño, nombre, puntaje):
 
 
 def esta_en_top(tamaño, puntaje):
-    """True si el puntaje entraría al Top (hay menos de 20 o supera al menor del Top)."""
+    """True si el puntaje entraría al Top, hay menos de 20 o supera al menor del Top."""
     puntajes = cargar_puntajes(tamaño)
     if len(puntajes) < 20:
         return True
