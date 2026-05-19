@@ -1,3 +1,6 @@
+import os
+import pygame
+
 CELDA_LIBRE = 0
 CELDA_OBSTACULO = 1
 CELDA_MONEDA_5 = 2
@@ -41,4 +44,31 @@ COLOR_TOP_DESTACADO = "#d7b700"
 
 TAMAÑO_CELDA_PX = 28
 
-MUSICA_FONDO = "musica_fondo.mp3"
+ARCHIVO_FONDO = "musica_fondo.ogg" 
+ARCHIVO_MONEDA = "moneda.wav"
+ARCHIVO_BOMBA = "bomba.wav"
+ARCHIVO_FANTASMA = "fantasma.wav"
+ARCHIVO_GAME_OVER = "game_over.ogg"
+
+pygame.mixer.init()
+
+CARPETA_SONIDOS = "sonido"
+
+try:
+    ruta_fondo = os.path.join(CARPETA_SONIDOS, ARCHIVO_FONDO)
+    pygame.mixer.music.load(ruta_fondo)
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(-1)
+
+    sonido_moneda = pygame.mixer.Sound(os.path.join(CARPETA_SONIDOS, ARCHIVO_MONEDA))
+    sonido_bomba = pygame.mixer.Sound(os.path.join(CARPETA_SONIDOS, ARCHIVO_BOMBA))
+    sonido_fantasma = pygame.mixer.Sound(os.path.join(CARPETA_SONIDOS, ARCHIVO_FANTASMA))
+    sonido_game_over = pygame.mixer.Sound(os.path.join(CARPETA_SONIDOS, ARCHIVO_GAME_OVER))
+
+except pygame.error as e:
+    print(f"Error al cargar sonidos: {e}")
+    sonido_moneda = None
+    sonido_bomba = None
+    sonido_fantasma = None
+    sonido_game_over = None
+
