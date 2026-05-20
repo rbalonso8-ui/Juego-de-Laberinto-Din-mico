@@ -18,7 +18,7 @@ class jugador:
         self.bombas = 0
         self.pasos_fantasma = 0
 
-    def _recolectar(self, valor):
+    def recolectar(self, valor):
         """Suma el efecto del elemento recolectado al inventario o puntaje."""
         if valor == CELDA_MONEDA_5:
             self.puntaje += PUNTOS_MONEDA_5
@@ -46,7 +46,7 @@ class jugador:
         if valor == CELDA_OBSTACULO:
             return
 
-        self._recolectar(valor)
+        self.recolectar(valor)
         matriz.valor_celda(nueva_f, nueva_c, CELDA_LIBRE)
         self.fila = nueva_f
         self.columna = nueva_c
@@ -91,7 +91,7 @@ class jugador:
         if valor_destino == CELDA_OBSTACULO:
             return
 
-        self._recolectar(valor_destino)
+        self.recolectar(valor_destino)
         matriz.valor_celda(f2, c2, CELDA_LIBRE)
         
         self.fila = f2

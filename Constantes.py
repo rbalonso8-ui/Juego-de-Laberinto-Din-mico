@@ -1,6 +1,3 @@
-import os
-import pygame
-
 CELDA_LIBRE = 0
 CELDA_OBSTACULO = 1
 CELDA_MONEDA_5 = 2

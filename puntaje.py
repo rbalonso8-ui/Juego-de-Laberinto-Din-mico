@@ -1,11 +1,11 @@
 import os
 
-def _ruta(tamaño):
+def ruta_documento(tamaño):
     """Devuelve el nombre del archivo de puntajes para un tamaño de matriz."""
     return f"puntajes_{tamaño}.txt"
 
 
-def _limpiar_nombre(nombre):
+def limpiar_nombre(nombre):
     """Normaliza un nombre: quita tabs/saltos y trunca a 10 caracteres."""
     if not nombre:
         return "Anonimo"
@@ -21,7 +21,7 @@ def cargar_puntajes(tamaño):
     Returns:
         list[tuple[str, int]]: lista con hasta 20 (nombre, puntaje); vacía si no hay archivo.
     """
-    ruta = _ruta(tamaño)
+    ruta = ruta_documento(tamaño)
     if not os.path.exists(ruta):
         return []
     entradas = []
@@ -50,7 +50,7 @@ def cargar_puntajes(tamaño):
 
 def guardar_puntaje(tamaño, nombre, puntaje):
     """Agrega un puntaje con nombre, deduplica por nombre y conserva el Top 20."""
-    nombre_limpio = _limpiar_nombre(nombre)
+    nombre_limpio = limpiar_nombre(nombre)
     entradas = cargar_puntajes(tamaño)
 
     mejores = {}
@@ -64,7 +64,7 @@ def guardar_puntaje(tamaño, nombre, puntaje):
     entradas = sorted(mejores.items(), key=lambda x: x[1], reverse=True)
     entradas = entradas[:20]
 
-    ruta = _ruta(tamaño)
+    ruta = ruta_documento(tamaño)
     with open(ruta, "w", encoding="utf-8") as f:
         for n, p in entradas:
             f.write(f"{n}\t{p}\n")
@@ -79,7 +79,7 @@ def esta_en_top(tamaño, puntaje):
 
 def nombre_existe(tamaño, nombre):
     """True si el nombre indicado ya está registrado en el Top de ese tamaño."""
-    nombre_limpio = _limpiar_nombre(nombre).lower()
+    nombre_limpio = limpiar_nombre(nombre).lower()
     if not nombre_limpio:
         return False
     entradas = cargar_puntajes(tamaño)

@@ -31,11 +31,11 @@ class Matriz:
         fila = [CELDA_OBSTACULO] * n_obstaculos + [CELDA_LIBRE] * (n - n_obstaculos)
         for _ in range(500):
             random.shuffle(fila)
-            if self._cumple_restriccion(fila):
+            if self.cumple_restriccion(fila):
                 return list(fila)
         return list(fila)
 
-    def _cumple_restriccion(self, fila):
+    def cumple_restriccion(self, fila):
         """True si la fila no tiene más de maximo de filas libres consecutivas."""
         consec = 0
         for celda in fila:

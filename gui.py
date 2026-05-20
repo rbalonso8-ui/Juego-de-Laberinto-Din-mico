@@ -1,5 +1,4 @@
 import tkinter as tk
-from turtle import color
 
 from Constantes import (
     CELDA_LIBRE, CELDA_OBSTACULO,
@@ -33,7 +32,7 @@ class MenuInicial:
         self.root.title("Laberinto Dinamico")
         self.root.configure(bg=COLOR_FONDO)
         self.root.resizable(False, False)
-        self._construir_widgets()
+        self.construir_widgets()
         
     def tamaño_titulo(self, tamaño):
         """Devuelve el título del juego."""
@@ -46,7 +45,7 @@ class MenuInicial:
         else:
             return f"{tamaño}x{tamaño}"
 
-    def _construir_widgets(self):
+    def construir_widgets(self):
         """Crea y posiciona los widgets de la ventana del menú."""
         tk.Label(
             self.root, text="LABERINTO DINAMICO",
@@ -68,7 +67,7 @@ class MenuInicial:
                 font=("Helvetica", 14, "bold"),
                 width=8, height=2,
                 cursor="hand2",
-                command=lambda t=tamaño: self._seleccionar_tamaño(t),
+                command=lambda t=tamaño: self.seleccionar_tamaño(t),
                 bg = "#4A4A4A",
                 fg=self.tamaño_titulo(tamaño)[1],
                 activebackground="#5A5A5A",
@@ -76,7 +75,7 @@ class MenuInicial:
                 relief="flat"
             ).pack(side=tk.LEFT, padx=8, pady=10)
 
-    def _seleccionar_tamaño(self, tamaño):
+    def seleccionar_tamaño(self, tamaño):
         """Botones del menú, guarda la selección y cierra la ventana."""
         self.tamaño_seleccionado = tamaño
         self.root.destroy()
@@ -111,8 +110,8 @@ class InterfazJuego:
             [None] * self.tamaño for _ in range(self.tamaño)
         ]
 
-        self._construir_widgets()
-        self._asociar_teclas()
+        self.construir_widgets()
+        self.asociar_teclas()
         self.root.protocol("WM_DELETE_WINDOW", self._cerrar)
         
     def tamaño_titulo(self, tamaño):
@@ -126,7 +125,7 @@ class InterfazJuego:
         else:
             return f"{tamaño}x{tamaño}"
 
-    def _construir_widgets(self):
+    def construir_widgets(self):
         """Crea la etiqueta de info, la rejilla de celdas y las instrucciones."""
         self.etiqueta_info = tk.Label(
             self.root, text="",
@@ -162,17 +161,17 @@ class InterfazJuego:
             bg=COLOR_FONDO, fg="#aaaaaa", pady=4,
         ).pack(fill=tk.X, padx=10, pady=(4, 8))
 
-    def _asociar_teclas(self):
+    def asociar_teclas(self):
         """Conecta cada tecla a la función correspondiente del juego."""
-        self.root.bind("<Up>",     lambda e: self._tecla("Up"))
-        self.root.bind("<Down>",   lambda e: self._tecla("Down"))
-        self.root.bind("<Left>",   lambda e: self._tecla("Left"))
-        self.root.bind("<Right>",  lambda e: self._tecla("Right"))
-        self.root.bind("<Key-1>",  lambda e: self._tecla("1"))
-        self.root.bind("<Key-2>",  lambda e: self._tecla("2"))
+        self.root.bind("<Up>",     lambda e: self.tecla("Up"))
+        self.root.bind("<Down>",   lambda e: self.tecla("Down"))
+        self.root.bind("<Left>",   lambda e: self.tecla("Left"))
+        self.root.bind("<Right>",  lambda e: self.tecla("Right"))
+        self.root.bind("<Key-1>",  lambda e: self.tecla("1"))
+        self.root.bind("<Key-2>",  lambda e: self.tecla("2"))
         self.root.bind("<Escape>", lambda e: self._cerrar())
 
-    def _tecla(self, nombre):
+    def tecla(self, nombre):
         """Reenvía una señal de tecla al motor del juego."""
         if not self.juego.jugando:
             return
@@ -181,31 +180,31 @@ class InterfazJuego:
     def iniciar(self):
         """Arranca el juego y entra al mainloop de Tkinter."""
         self.juego.iniciar()
-        self.root.after(50, self._actualizar)
+        self.root.after(50, self.actualizar)
         self.root.mainloop()
 
-    def _actualizar(self):
+    def actualizar(self):
         """actualiza tiempos, redibuja y reagenda."""
         if not self._activo:
             return
 
         self.juego.actualizar_tiempos()
-        self._dibujar()
-        self._actualizar_info()
+        self.dibujar()
+        self.actualizar_info()
 
         if not self.juego.jugando:
-            self._mostrar_game_over()
+            self.game_over()
             return
 
-        self.root.after(50, self._actualizar)
+        self.root.after(50, self.actualizar)
 
-    def _pintar_celda(self, fila, columna, color):
+    def pintar_celda(self, fila, columna, color):
         """Cambia el color de una celda solo si difiere del actual."""
         if self._colores_actuales[fila][columna] != color:
             self._colores_actuales[fila][columna] = color
             self.celdas[fila][columna].config(bg=color)
 
-    def _dibujar(self):
+    def dibujar(self):
         """Redibuja todo el tablero a partir del estado actual del juego."""
         with self.juego.lock:
             f_jug = self.juego.jugador.fila
@@ -217,9 +216,9 @@ class InterfazJuego:
                     else:
                         valor = self.juego.matriz.obtener_valor_celda(fila, columna)
                         color = _COLORES.get(valor, COLOR_LIBRE)
-                    self._pintar_celda(fila, columna, color)
+                    self.pintar_celda(fila, columna, color)
 
-    def _actualizar_info(self):
+    def actualizar_info(self):
         """Refresca el texto con puntaje, poderes y velocidad."""
         with self.juego.lock:
             p = self.juego.jugador.puntaje
@@ -235,7 +234,7 @@ class InterfazJuego:
             )
         )
 
-    def _pedir_nombre(self):
+    def pedir_nombre(self):
         """Muestra un diálogo modal pidiendo un nombre de máximo 10 caracteres.
 
         Returns:
@@ -321,7 +320,7 @@ class InterfazJuego:
         self.root.wait_window(dialogo)
         return resultado[0]
 
-    def _mostrar_game_over(self):
+    def game_over(self):
         """Muestra una ventana modal con el puntaje final y el Top 20 actualizado."""
         self._activo = False
         puntaje_final = self.juego.jugador.puntaje
@@ -331,7 +330,7 @@ class InterfazJuego:
 
         nombre_propio = None
         if entra_al_top:
-            nombre_propio = self._pedir_nombre()
+            nombre_propio = self.pedir_nombre()
             guardar_puntaje(self.tamaño, nombre_propio, puntaje_final)
 
         top = cargar_puntajes(self.tamaño)
