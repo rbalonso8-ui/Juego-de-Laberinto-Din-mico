@@ -76,3 +76,11 @@ def esta_en_top(tamaño, puntaje):
     if len(puntajes) < 20:
         return True
     return puntaje > puntajes[-1][1]
+
+def nombre_existe(tamaño, nombre):
+    """True si el nombre indicado ya está registrado en el Top de ese tamaño."""
+    nombre_limpio = _limpiar_nombre(nombre).lower()
+    if not nombre_limpio:
+        return False
+    entradas = cargar_puntajes(tamaño)
+    return any(n.lower() == nombre_limpio for n, _ in entradas)

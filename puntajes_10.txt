@@ -2,6 +2,7 @@ record	115
 max	95
 2	70
 Alonso	65
+F	65
 10	60
 R	60
 11	50

@@ -11,7 +11,7 @@ from Constantes import (
     TAMAÑOS, TAMAÑO_CELDA_PX,
 )
 
-from puntaje import cargar_puntajes, guardar_puntaje, esta_en_top
+from puntaje import cargar_puntajes, guardar_puntaje, esta_en_top, nombre_existe
 
 _COLORES = {
     CELDA_LIBRE:     COLOR_LIBRE,
@@ -243,57 +243,73 @@ class InterfazJuego:
         """
         nombre_var = tk.StringVar()
         resultado = [None]
-
+ 
         dialogo = tk.Toplevel(self.root)
         dialogo.title("¡Top 20!")
         dialogo.configure(bg=COLOR_FONDO)
         dialogo.resizable(False, False)
         dialogo.transient(self.root)
-
+ 
         tk.Label(
-            dialogo, text="¡Entraste al Top 20!",
+            dialogo, text="Entraste al Top 20",
             font=("Helvetica", 16, "bold"),
             bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
         ).pack(pady=(20, 5), padx=40)
-
+ 
         tk.Label(
-            dialogo, text="Ingresá tu nombre (máx 10 caracteres):",
+            dialogo, text=f"Ingresá tu nombre:",
             font=("Helvetica", 11),
             bg=COLOR_FONDO, fg=COLOR_TEXTO,
         ).pack(pady=(0, 10))
-
-        def validar(P):
+        def validar_longitud(P):
             return len(P) <= 10
-
-        vcmd = (dialogo.register(validar), "%P")
+ 
+        vcmd = (dialogo.register(validar_longitud), "%P")
         entrada = tk.Entry(
             dialogo, textvariable=nombre_var,
             font=("Consolas", 14),
-            width=12, justify="center",
+            width=14, justify="center",
             validate="key", validatecommand=vcmd,
         )
-        entrada.pack(pady=(0, 15), padx=20)
+        entrada.pack(pady=(0, 6), padx=20)
         entrada.focus_set()
-
+ 
+        etiqueta_error = tk.Label(
+            dialogo, text="",
+            font=("Helvetica", 10, "italic"),
+            bg=COLOR_FONDO, fg="#ff6666",
+            wraplength=260,
+        )
+        etiqueta_error.pack(pady=(0, 8), padx=20)
+        
         def confirmar(event=None):
             nombre = nombre_var.get().strip()
             if not nombre:
-                nombre = "Anonimo"
-            resultado[0] = nombre[:10]
+                etiqueta_error.config(text="El nombre no puede estar vacío.")
+                return
+            nombre = nombre[:10]
+            if nombre_existe(self.tamaño, nombre):
+                etiqueta_error.config(
+                    text=f"El nombre '{nombre}' ya está en el Top. Elegí otro."
+                )
+                nombre_var.set("")
+                entrada.focus_set()
+                return
+            resultado[0] = nombre
             try:
                 dialogo.destroy()
             except tk.TclError:
                 pass
-
+ 
         tk.Button(
             dialogo, text="Guardar",
             font=("Helvetica", 12, "bold"),
             width=12, cursor="hand2",
             command=confirmar,
         ).pack(pady=(0, 18))
-
+ 
         dialogo.bind("<Return>", confirmar)
-        dialogo.protocol("WM_DELETE_WINDOW", confirmar)
+        dialogo.protocol("WM_DELETE_WINDOW", lambda: None)
         dialogo.update_idletasks()
         try:
             dialogo.grab_set()
@@ -301,9 +317,9 @@ class InterfazJuego:
             pass
         dialogo.lift()
         dialogo.focus_force()
-
+ 
         self.root.wait_window(dialogo)
-        return resultado[0] or "Anonimo"
+        return resultado[0]
 
     def _mostrar_game_over(self):
         """Muestra una ventana modal con el puntaje final y el Top 20 actualizado."""

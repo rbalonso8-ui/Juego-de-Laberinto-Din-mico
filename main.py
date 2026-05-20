@@ -10,6 +10,7 @@ def main():
     tamaño = menu.mostrar()
  
     if tamaño is None:
+        audio.detener_todo()
         return
  
     juego = Juego(tamaño)

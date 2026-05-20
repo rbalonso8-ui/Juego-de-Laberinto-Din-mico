@@ -19,8 +19,8 @@ from matriz import Matriz
 from Jugador import jugador
 
 
-_TIPOS_ELEMENTOS = [CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA]
-_PESOS_ELEMENTOS = [40, 25, 20, 15]
+TIPOS_ELEMENTOS = [CELDA_MONEDA_5, CELDA_MONEDA_10, CELDA_BOMBA, CELDA_FANTASMA]
+PESOS_ELEMENTOS = [40, 25, 20, 15]
 
 TIEMPO_GRACIA_INICIAL = 4.0
 
@@ -54,7 +54,7 @@ class Juego:
                   if c != (self.jugador.fila, self.jugador.columna)]
         random.shuffle(libres)
         ahora = time.time()
-        for tipo, (f, c) in zip(_TIPOS_ELEMENTOS, libres):
+        for tipo, (f, c) in zip(TIPOS_ELEMENTOS, libres):
             self.matriz.valor_celda(f, c, tipo)
             self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
 
@@ -134,7 +134,7 @@ class Juego:
         if not libres:
             return
         f, c = random.choice(libres)
-        tipo = random.choices(_TIPOS_ELEMENTOS, weights=_PESOS_ELEMENTOS)[0]
+        tipo = random.choices(TIPOS_ELEMENTOS, weights=PESOS_ELEMENTOS)[0]
         self.matriz.valor_celda(f, c, tipo)
         self.elementos.append({'fila': f, 'columna': c, 'tipo': tipo, 't': ahora})
 
