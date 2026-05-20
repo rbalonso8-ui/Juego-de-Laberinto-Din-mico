@@ -5,7 +5,7 @@ from Constantes import (
     PUNTOS_MONEDA_5, PUNTOS_MONEDA_10,
     DIRECCION_ARRIBA,
 )
-
+import audio
 
 class jugador:
     """Datos, movimiento y habilidades especiales del jugador."""
@@ -22,8 +22,10 @@ class jugador:
         """Suma el efecto del elemento recolectado al inventario o puntaje."""
         if valor == CELDA_MONEDA_5:
             self.puntaje += PUNTOS_MONEDA_5
+            audio.reproducir_moneda()
         elif valor == CELDA_MONEDA_10:
             self.puntaje += PUNTOS_MONEDA_10
+            audio.reproducir_moneda()
         elif valor == CELDA_BOMBA:
             self.bombas += 1
         elif valor == CELDA_FANTASMA:
@@ -62,6 +64,7 @@ class jugador:
             return
         matriz.valor_celda(f_obj, c_obj, CELDA_LIBRE)
         self.bombas -= 1
+        audio.reproducir_bomba()
 
     def usar_paso_fantasma(self, matriz):
         """Atraviesa exactamente un obstáculo en la dirección actual y se posiciona en la primera celda libre inmediatamente posterior."""
@@ -94,3 +97,4 @@ class jugador:
         self.fila = f2
         self.columna = c2
         self.pasos_fantasma -= 1
+        audio.reproducir_fantasma()

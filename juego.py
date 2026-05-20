@@ -14,6 +14,7 @@ from Constantes import (
     CELDA_BOMBA, CELDA_FANTASMA,
     CELDA_LIBRE,
 )
+import audio
 from matriz import Matriz
 from Jugador import jugador
 
@@ -86,6 +87,7 @@ class Juego:
                 if self.jugador.fila >= self.tamaño:
                     self.jugando = False
                     print("[Game Over] El jugador quedó fuera del mapa.")
+                    audio.reproducir_game_over()
                     break
             time.sleep(self.intervalo_scroll)
 

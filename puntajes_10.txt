@@ -1,12 +1,14 @@
 record	115
 max	95
 2	70
+Alonso	65
 10	60
+R	60
 11	50
 45	45
 Allo	40
-Alonso	30
 D	25
+Hola	25
 C	20
 X	15
 Xd	15
