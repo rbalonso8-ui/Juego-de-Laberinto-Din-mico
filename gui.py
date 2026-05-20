@@ -220,7 +220,7 @@ class InterfazJuego:
                     self._pintar_celda(fila, columna, color)
 
     def _actualizar_info(self):
-        """Refresca el texto del HUD con puntaje, poderes y velocidad."""
+        """Refresca el texto con puntaje, poderes y velocidad."""
         with self.juego.lock:
             p = self.juego.jugador.puntaje
             b = self.juego.jugador.bombas
@@ -231,7 +231,7 @@ class InterfazJuego:
                 f"Puntaje: {p:>5}   |   "
                 f"Bombas: {b:>2}   |   "
                 f"Paso Fantasma: {f:>2}   |   "
-                f"Velocidad: {v:.1f}s/fila"
+                f"Velocidad: {v:.1f}"
             )
         )
 
@@ -340,7 +340,7 @@ class InterfazJuego:
 
         if entra_al_top:
             tk.Label(
-                ventana, text=f"¡Entraste al Top 20 como {nombre_propio}!",
+                ventana, text=f"Entraste al Top 20 como {nombre_propio}",
                 font=("Helvetica", 12, "bold", "italic"),
                 bg=COLOR_FONDO, fg=COLOR_TOP_DESTACADO,
             ).pack(pady=(0, 8))
@@ -422,12 +422,3 @@ class InterfazJuego:
             self.root.destroy()
         except tk.TclError:
             pass
-
-
-if __name__ == "__main__":
-    from juego import Juego
-    menu = MenuInicial()
-    tamaño = menu.mostrar()
-    if tamaño is not None:
-        juego = Juego(tamaño)
-        InterfazJuego(tamaño, juego).iniciar()

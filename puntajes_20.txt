@@ -1,7 +1,9 @@
+F	25
 A	20
 hola	20
 P	15
 xd	10
+x	10
 Hola	5
 R	5
 Anonimo	0

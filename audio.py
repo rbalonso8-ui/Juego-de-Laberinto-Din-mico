@@ -52,7 +52,6 @@ def iniciar_audio():
     _sonido_fantasma = _cargar_efecto(ARCHIVO_FANTASMA)
     _sonido_game_over = _cargar_efecto(ARCHIVO_GAME_OVER)
 
-    # Música de fondo en bucle infinito.
     ruta_fondo = os.path.join(CARPETA_SONIDOS, ARCHIVO_FONDO)
     if os.path.isfile(ruta_fondo):
         try:

@@ -5,11 +5,13 @@ Alonso	65
 10	60
 R	60
 11	50
+S	50
 45	45
+Anonimo	45
 Allo	40
 D	25
 Hola	25
 C	20
+L	20
 X	15
 Xd	15
-Anonimo	10

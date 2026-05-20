@@ -10,15 +10,11 @@ def main():
     tamaño = menu.mostrar()
  
     if tamaño is None:
-        print("Saliendo del juego.")
         return
  
     juego = Juego(tamaño)
     interfaz = InterfazJuego(tamaño, juego)
     interfaz.iniciar()
- 
-    print("Juego finalizado.")
- 
  
 if __name__ == "__main__":
     main()
